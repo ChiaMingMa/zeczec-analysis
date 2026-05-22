@@ -2,7 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   ShoppingBag, Package, Tag, BarChart2,
-  MapPin, Users, LogOut, Menu, X
+  MapPin, Users, LogOut, Menu, X, ShoppingCart
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -64,6 +64,14 @@ export function AdminLayout() {
 
         {/* Footer */}
         <div className="px-3 py-4 border-t border-gray-100 space-y-1">
+          <NavLink
+            to="/pos/checkout"
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-indigo-600 hover:bg-indigo-50 transition-colors font-medium"
+          >
+            <ShoppingCart className="w-4 h-4 flex-shrink-0" />
+            切換到前台結帳
+          </NavLink>
           <div className="px-3 py-2 text-xs text-gray-400">
             {profile?.display_name}
             <span className="ml-1 text-indigo-500">（管理者）</span>
