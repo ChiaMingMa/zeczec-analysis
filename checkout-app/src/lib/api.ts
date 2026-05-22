@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Product, Promotion, Order, OrderItem } from '../types/database'
+import type { Product, Promotion, Order, OrderItem, Location, Profile, Role } from '../types/database'
 import type { CartSummary } from '../types/cart'
 
 // ── Products ─────────────────────────────────────────────────
@@ -100,6 +100,94 @@ export async function createOrder(
   if (itemsError) throw itemsError
 
   return order as Order
+}
+
+// ── Locations ────────────────────────────────────────────────
+
+export async function fetchLocations() {
+  const { data, error } = await supabase
+    .from('locations')
+    .select('*')
+    .order('created_at', { ascending: true })
+  if (error) throw error
+  return data as Location[]
+}
+
+export async function upsertLocation(location: { id?: string; name: string; is_active?: boolean }) {
+  const { data, error } = await supabase
+    .from('locations')
+    .upsert(location)
+    .select()
+    .single()
+  if (error) throw error
+  return data as Location
+}
+
+export async function toggleLocationActive(id: string, is_active: boolean) {
+  const { error } = await supabase.from('locations').update({ is_active }).eq('id', id)
+  if (error) throw error
+}
+
+// ── Promotions (admin) ───────────────────────────────────────
+
+export async function fetchAllPromotions() {
+  const { data, error } = await supabase
+    .from('promotions')
+    .select('*')
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data as Promotion[]
+}
+
+export async function upsertPromotion(promo: Omit<Promotion, 'id' | 'created_at'> & { id?: string }) {
+  const { data, error } = await supabase
+    .from('promotions')
+    .upsert(promo)
+    .select()
+    .single()
+  if (error) throw error
+  return data as Promotion
+}
+
+export async function togglePromotionActive(id: string, is_active: boolean) {
+  const { error } = await supabase.from('promotions').update({ is_active }).eq('id', id)
+  if (error) throw error
+}
+
+export async function deletePromotion(id: string) {
+  const { error } = await supabase.from('promotions').delete().eq('id', id)
+  if (error) throw error
+}
+
+// ── Profiles (admin) ─────────────────────────────────────────
+
+export async function fetchProfiles() {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*, location:locations(id, name)')
+    .order('created_at', { ascending: true })
+  if (error) throw error
+  return data as Profile[]
+}
+
+export async function updateProfile(id: string, updates: { role?: Role; display_name?: string; location_id?: string | null }) {
+  const { error } = await supabase.from('profiles').update(updates).eq('id', id)
+  if (error) throw error
+}
+
+// ── Orders – date range (dashboard) ─────────────────────────
+
+export async function fetchOrdersByDateRange(startIso: string, endIso: string, locationId?: string) {
+  let query = supabase
+    .from('orders')
+    .select('id, created_at, subtotal, discount_amount, total, location_id, location:locations(name), staff:profiles(display_name)')
+    .gte('created_at', startIso)
+    .lt('created_at', endIso)
+    .order('created_at', { ascending: false })
+  if (locationId) query = query.eq('location_id', locationId)
+  const { data, error } = await query
+  if (error) throw error
+  return data as unknown as (Pick<Order, 'id' | 'created_at' | 'subtotal' | 'discount_amount' | 'total' | 'location_id'> & { location: { name: string } | null; staff: { display_name: string } | null })[]
 }
 
 export async function fetchTodayOrders(locationId: string) {
