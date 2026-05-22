@@ -15,6 +15,7 @@ type ImageMode = 'url' | 'upload'
 export function ProductFormModal({ product, onSave, onUploadImage, onClose }: Props) {
   const isEdit = !!product
   const [name, setName] = useState(product?.name ?? '')
+  const [sku, setSku] = useState(product?.sku ?? '')
   const [price, setPrice] = useState(product?.price?.toString() ?? '')
   const [category, setCategory] = useState(product?.category ?? '')
   const [imageUrl, setImageUrl] = useState(product?.image_url ?? '')
@@ -54,6 +55,7 @@ export function ProductFormModal({ product, onSave, onUploadImage, onClose }: Pr
       await onSave({
         ...(product?.id ? { id: product.id } : {}),
         name: name.trim(),
+        sku: sku.trim() || null,
         price: priceNum,
         image_url: imageUrl.trim(),
         category: category.trim() || null,
@@ -77,6 +79,18 @@ export function ProductFormModal({ product, onSave, onUploadImage, onClose }: Pr
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="例：好肩力 Pro｜斜方肌肩頸按摩器"
+            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+
+        {/* 商品編號 */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">商品編號</label>
+          <input
+            type="text"
+            value={sku}
+            onChange={e => setSku(e.target.value)}
+            placeholder="例：G09-14"
             className="w-full px-3 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>

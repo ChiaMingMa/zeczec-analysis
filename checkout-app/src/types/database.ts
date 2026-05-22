@@ -22,6 +22,7 @@ export interface Product {
   image_url: string
   price: number
   category: string | null
+  sku: string | null
   is_active: boolean
   created_at: string
 }

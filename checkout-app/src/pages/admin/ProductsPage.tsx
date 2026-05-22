@@ -14,7 +14,8 @@ export function ProductsPage() {
 
   const filtered = products.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
-    (p.category ?? '').toLowerCase().includes(search.toLowerCase())
+    (p.category ?? '').toLowerCase().includes(search.toLowerCase()) ||
+    (p.sku ?? '').toLowerCase().includes(search.toLowerCase())
   )
 
   function openAdd() { setEditing(undefined); setModalOpen(true) }
@@ -104,9 +105,10 @@ export function ProductsPage() {
                     {p.is_active ? '上架' : '下架'}
                   </Badge>
                 </div>
-                {p.category && (
-                  <p className="text-xs text-gray-400 mb-1">{p.category}</p>
-                )}
+                <div className="flex items-center gap-2 mb-1">
+                  {p.sku && <span className="text-xs text-gray-400 font-mono">{p.sku}</span>}
+                  {p.category && <span className="text-xs text-gray-400">{p.category}</span>}
+                </div>
                 <p className="text-base font-bold text-indigo-600">
                   ${p.price.toLocaleString()}
                 </p>

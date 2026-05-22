@@ -222,6 +222,7 @@ export function CheckoutPage() {
                     </div>
                     <div className="p-2">
                       <p className="text-xs font-medium text-gray-800 line-clamp-2 leading-snug">{p.name}</p>
+                      {p.sku && <p className="text-xs text-gray-400 font-mono mt-0.5">{p.sku}</p>}
                       <p className="text-sm font-bold text-indigo-600 mt-1">${p.price.toLocaleString()}</p>
                     </div>
                     {inCart && (
