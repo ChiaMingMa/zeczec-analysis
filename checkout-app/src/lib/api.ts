@@ -175,6 +175,13 @@ export async function updateProfile(id: string, updates: { role?: Role; display_
   if (error) throw error
 }
 
+export async function createUser(payload: { email: string; password: string; display_name: string; role: Role; location_id: string | null }) {
+  const { data, error } = await supabase.functions.invoke('create-user', { body: payload })
+  if (error) throw error
+  if (data?.error) throw new Error(data.error)
+  return data as { success: boolean; user_id: string }
+}
+
 // ── Orders – date range (dashboard) ─────────────────────────
 
 export async function fetchOrdersByDateRange(startIso: string, endIso: string, locationId?: string) {
